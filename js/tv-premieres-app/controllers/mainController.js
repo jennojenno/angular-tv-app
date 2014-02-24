@@ -5,6 +5,12 @@ app.controller("mainController", function($scope, $http){
     $scope.filterText = null; // Set this to null so that, at first, it has no filter
     $scope.availableGenres = [];
     $scope.genreFilter = null; 
+
+    $scope.orderFields = ["Air Date", "Rating"];
+    $scope.orderDirections = ["Descending", "Ascending"];
+    $scope.orderField = "Air Date"; // default
+    $scope.orderReverse = false;
+    
     $scope.init = function() {
         //API requires a start date
         var today = new Date();
@@ -57,6 +63,17 @@ app.controller("mainController", function($scope, $http){
     $scope.setGenreFilter = function(genre) {
         $scope.genreFilter = genre;
     }
+
+    $scope.customOrder = function(tvshow){
+        switch ($scope.orderField) {
+        case "Air Date": 
+            return tvshow.episode.first_aired;
+            break;
+        case "Rating":
+            return tvshow.episode.ratings.percentage;
+            break;
+        }
+    };
 });
 
 app.filter('matchGenre', function() {
