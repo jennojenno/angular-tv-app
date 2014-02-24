@@ -53,10 +53,14 @@ app.controller("mainController", function($scope, $http){
 
         });
     };
+
+    $scope.setGenreFilter = function(genre) {
+        $scope.genreFilter = genre;
+    }
 });
 
 app.filter('matchGenre', function() {
-    // Input here refers to all the returned objects, all the TV shows retrieved
+    //Input here refers to all the returned objects, all the TV shows retrieved
     return function(input, genre) {
         if (typeof genre == 'undefined' || genre == null) {
             return input; 
