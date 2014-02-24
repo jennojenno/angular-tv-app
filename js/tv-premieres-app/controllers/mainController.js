@@ -2,6 +2,7 @@ app.controller("mainController", function($scope, $http){
 
     $scope.apiKey = "04f7780f3647f76e057ba9e64eb2c798";
     $scope.results = [];
+    $scope.filterText = null;
     $scope.init = function() {
         //API requires a start date
         var today = new Date();
@@ -16,14 +17,19 @@ app.controller("mainController", function($scope, $http){
 
         $http.jsonp('http://api.trakt.tv/calendar/premieres.json/' + 
         // the $http.jsonp allows our app to call a URL we don't own to receive JSON data
+        // it is an Angular thing and generates an HTTP request. It returns with either
+        // a success or error, always. 
         $scope.apiKey + '/' + apiDate + '/' + 30 + '/?callback=JSON_CALLBACK')
         // this API requires the api key, date, and number of days to work. 
+        // doc: http://trakt.tv/api-docs/calendar-premieres
         .success(function(data) {
             // here, data refers to all the returned Objects from the api.
             angular.forEach(data, function(value, index) {
+                // Saving the date below bc this api stores the date separately 
                 var date = value.date;
+                // Now we are saving each episode and inserting it into results array
                 angular.forEach(value.episodes, function(tvshow, index) {
-                    tvshow.date = date;
+                    tvshow.date = date; // Attach date to each episode
                     $scope.results.push(tvshow);
                     //console.log(tvshow.episode.overview);
                 });
