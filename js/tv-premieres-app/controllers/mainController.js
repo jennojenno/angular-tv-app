@@ -2,7 +2,9 @@ app.controller("mainController", function($scope, $http){
 
     $scope.apiKey = "04f7780f3647f76e057ba9e64eb2c798";
     $scope.results = [];
-    $scope.filterText = null;
+    $scope.filterText = null; // Set this to null so that, at first, it has no filter
+    $scope.availableGenres = [];
+    $scope.genreFilter = null; 
     $scope.init = function() {
         //API requires a start date
         var today = new Date();
@@ -32,28 +34,43 @@ app.controller("mainController", function($scope, $http){
                     tvshow.date = date; // Attach date to each episode
                     $scope.results.push(tvshow);
                     //console.log(tvshow.episode.overview);
+
+                    angular.forEach(tvshow.show.genres, function(genre, index){
+                        var exists = false;
+                        angular.forEach($scope.availableGenres, function(avGenre, index){
+                            if (avGenre == genre) {
+                                exists = true;
+                            }
+                        });
+                        if (exists == false && genre != ""){
+                            $scope.availableGenres.push(genre);
+                        }
+                    }) 
                 });
             });
+        // console.log($scope.availableGenres);
         }).error(function(error) {
 
         });
     };
-
 });
 
-// app.controller("mainController", function($scope, $http){
- 
-//     $scope.apiKey = "04f7780f3647f76e057ba9e64eb2c798";
-//     $scope.init = function() {
-//         //API requires a start date
-//         var today = new Date();
-//         //Create the date string and ensure leading zeros if required
-//         var apiDate = today.getFullYear() + ("0" + (today.getMonth() + 1)).slice(-2) + "" + ("0" + today.getDate()).slice(-2);
-//         $http.jsonp('http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 30 + '/?callback=JSON_CALLBACK').success(function(data) {
-//             results = data;
-//             console.log(data);
-//         }).error(function(error) {
-//         });
-//     };
- 
-// });
+app.filter('matchGenre', function() {
+    // Input here refers to all the returned objects, all the TV shows retrieved
+    return function(input, genre) {
+        if (typeof genre == 'undefined' || genre == null) {
+            return input; 
+        } else { 
+            var out = [];
+            console.log(input);
+            for (var a = 0; a < input.length; a++){
+                for (var b = 0; b < input[a].show.genres.length; b++) {
+                    if(input[a].show.genres[b] == genre) {
+                        out.push(input[a]); 
+                    }
+                }
+            }
+            return out;
+        }
+    }
+});
